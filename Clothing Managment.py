@@ -306,6 +306,15 @@ elif page == "📊 Dashboard":
     else:
         view_df = df
 
+    s1, s2 = st.columns(2)
+    search_name = s1.text_input("🔍 Search by name", placeholder="e.g. Vintage Camera")
+    search_barcode = s2.text_input("🔍 Search by barcode", placeholder="e.g. 123456789012")
+
+    if search_name:
+        view_df = view_df[view_df["name"].str.contains(search_name, case=False, na=False)]
+    if search_barcode:
+        view_df = view_df[view_df["barcode_number"].str.contains(search_barcode, case=False, na=False)]
+
     display_cols = ["barcode_number", "name", "date_bought", "buy_price", "date_sold", "sell_price", "profit"]
     rename_map = {
         "barcode_number": "Barcode",
