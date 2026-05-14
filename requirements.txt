@@ -1,5 +1,6 @@
 streamlit>=1.32.0
-supabase>=2.4.0
+supabase==2.4.3
 python-barcode[images]>=0.15.1
 Pillow>=10.0.0
 pandas>=2.0.0
+httpx==0.27.0
