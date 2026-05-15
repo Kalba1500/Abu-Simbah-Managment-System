@@ -364,11 +364,11 @@ elif page == "📊 Dashboard":
                 return pd.Timestamp(d).strftime("%Y-%m-%d")
 
             supabase.table("inventory").update({
-                "name": row["Item"],
+                "name": row["Item"] if pd.notna(row["Item"]) and row["Item"] != "" else "Unknown",
                 "date_bought": fmt_date(row["Bought On"]),
                 "date_sold": fmt_date(row["Sold On"]),
-                "buy_price": row["Buy ($)"],
-                "sell_price": sell if pd.notna(sell) else None,
+                "buy_price": float(row["Buy ($)"]) if pd.notna(row["Buy ($)"]) else 0.0,
+                "sell_price": float(sell) if pd.notna(sell) and sell else None,
                 "profit": profit,
             }).eq("barcode_number", row["Barcode"]).execute()
         st.success("✅ Changes saved!")
