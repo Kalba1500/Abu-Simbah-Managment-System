@@ -345,11 +345,26 @@ elif page == "📊 Dashboard":
         "sell_price": "Sell ($)",
         "profit": "Profit ($)",
     }
-    st.dataframe(
+    edited_df = st.data_editor(
         view_df[display_cols].rename(columns=rename_map),
         use_container_width=True,
         hide_index=True,
+        disabled=["Barcode"],
     )
+
+    if st.button("💾 Save Changes"):
+        for _, row in edited_df.iterrows():
+            buy = row["Buy ($)"] or 0
+            sell = row["Sell ($)"]
+            profit = round(float(sell) - float(buy), 2) if sell else None
+            supabase.table("inventory").update({
+                "name": row["Item"],
+                "buy_price": row["Buy ($)"],
+                "sell_price": sell,
+                "profit": profit,
+            }).eq("barcode_number", row["Barcode"]).execute()
+        st.success("✅ Changes saved!")
+        st.rerun()
 
     #  Download CSV
     csv = view_df[display_cols].rename(columns=rename_map).to_csv(index=False)
