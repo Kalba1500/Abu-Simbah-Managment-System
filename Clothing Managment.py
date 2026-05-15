@@ -356,11 +356,19 @@ elif page == "📊 Dashboard":
         for _, row in edited_df.iterrows():
             buy = row["Buy ($)"] or 0
             sell = row["Sell ($)"]
-            profit = round(float(sell) - float(buy), 2) if sell else None
+            profit = round(float(sell) - float(buy), 2) if pd.notna(sell) and sell else None
+
+            def fmt_date(d):
+                if pd.isna(d) or d == "" or d is None:
+                    return None
+                return pd.Timestamp(d).strftime("%Y-%m-%d")
+
             supabase.table("inventory").update({
                 "name": row["Item"],
+                "date_bought": fmt_date(row["Bought On"]),
+                "date_sold": fmt_date(row["Sold On"]),
                 "buy_price": row["Buy ($)"],
-                "sell_price": sell,
+                "sell_price": sell if pd.notna(sell) else None,
                 "profit": profit,
             }).eq("barcode_number", row["Barcode"]).execute()
         st.success("✅ Changes saved!")
