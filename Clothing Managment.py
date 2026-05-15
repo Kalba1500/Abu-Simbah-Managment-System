@@ -3,8 +3,6 @@ from supabase import create_client
 import barcode
 from barcode.writer import ImageWriter
 from io import BytesIO
-import random
-import string
 from datetime import date
 import pandas as pd
 
@@ -108,8 +106,14 @@ except Exception:
 
 #  Helpers 
 def generate_barcode_number():
-    """Generate a unique 12-digit numeric barcode (EAN-13 compatible base)."""
-    return "".join(random.choices(string.digits, k=12))
+    """Generate next barcode in FLY0001, FLY0002... sequence."""
+    res = supabase.table("inventory").select("barcode_number").execute()
+    existing = [r["barcode_number"] for r in res.data if r["barcode_number"].startswith("FLY")]
+    if not existing:
+        return "FLY0001"
+    numbers = [int(b[3:]) for b in existing if b[3:].isdigit()]
+    next_num = max(numbers) + 1 if numbers else 1
+    return f"FLY{next_num:04d}"
 
 def make_barcode_image(barcode_number: str) -> BytesIO:
     """Render a Code128 barcode to a PNG in memory."""
@@ -294,6 +298,22 @@ elif page == "📊 Dashboard":
     k3.metric("In Stock", len(unsold))
     total_profit = sold["profit"].sum() if not sold.empty else 0
     k4.metric("Total Profit", f"${total_profit:,.2f}")
+
+    #  Profit/Loss by period 
+    if not sold.empty:
+        sold["date_sold"] = pd.to_datetime(sold["date_sold"])
+        today = pd.Timestamp.today().normalize()
+
+        daily  = sold[sold["date_sold"] == today]["profit"].sum()
+        weekly = sold[sold["date_sold"] >= today - pd.Timedelta(weeks=1)]["profit"].sum()
+        monthly= sold[sold["date_sold"] >= today - pd.Timedelta(days=30)]["profit"].sum()
+        yearly = sold[sold["date_sold"] >= today - pd.Timedelta(days=365)]["profit"].sum()
+
+        p1, p2, p3, p4 = st.columns(4)
+        p1.metric("Today's P/L",  f"${daily:,.2f}")
+        p2.metric("Weekly P/L",   f"${weekly:,.2f}")
+        p3.metric("Monthly P/L",  f"${monthly:,.2f}")
+        p4.metric("Yearly P/L",   f"${yearly:,.2f}")
 
     st.markdown("---")
 
