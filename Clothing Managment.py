@@ -5,6 +5,24 @@ from barcode.writer import ImageWriter
 from io import BytesIO
 from datetime import date
 import pandas as pd
+import streamlit_authenticator as stauth
+
+authenticator = stauth.Authenticate(
+    dict(st.secrets["credentials"]),
+    "inventory_app",
+    "abcdef123",
+    cookie_expiry_days=7
+)
+
+name, authentication_status, username = authenticator.login("Login", "main")
+
+if authentication_status is False:
+    st.error("❌ Incorrect username or password")
+    st.stop()
+elif authentication_status is None:
+    st.stop()
+
+authenticator.logout("Logout", "sidebar")
 
 #  Page config
 st.set_page_config(
