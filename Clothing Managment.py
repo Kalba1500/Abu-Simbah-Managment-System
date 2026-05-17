@@ -25,15 +25,15 @@ authenticator = stauth.Authenticate(
     cookie_expiry_days=7
 )
 
-name, authentication_status, username = authenticator.login("Login", "main")
+authenticator.login()
 
-if authentication_status is False:
+if st.session_state.get("authentication_status") is False:
     st.error("❌ Incorrect username or password")
     st.stop()
-elif authentication_status is None:
+elif st.session_state.get("authentication_status") is None:
     st.stop()
 
-authenticator.logout("Logout", "sidebar")
+authenticator.logout(location="sidebar")
 
 #  Page config
 st.set_page_config(
