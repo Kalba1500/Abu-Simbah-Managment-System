@@ -7,10 +7,16 @@ from datetime import date
 import pandas as pd
 import streamlit_authenticator as stauth
 
-import json
-credentials = json.loads(json.dumps(dict(st.secrets["credentials"])))
-for username in credentials["usernames"]:
-    credentials["usernames"][username] = dict(credentials["usernames"][username])
+credentials = {
+    "usernames": {
+        username: {
+            "name": st.secrets["credentials"]["usernames"][username]["name"],
+            "password": st.secrets["credentials"]["usernames"][username]["password"],
+            "role": st.secrets["credentials"]["usernames"][username]["role"],
+        }
+        for username in st.secrets["credentials"]["usernames"]
+    }
+}
 
 authenticator = stauth.Authenticate(
     credentials,
