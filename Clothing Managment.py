@@ -7,8 +7,13 @@ from datetime import date
 import pandas as pd
 import streamlit_authenticator as stauth
 
+import json
+credentials = json.loads(json.dumps(dict(st.secrets["credentials"])))
+for username in credentials["usernames"]:
+    credentials["usernames"][username] = dict(credentials["usernames"][username])
+
 authenticator = stauth.Authenticate(
-    dict(st.secrets["credentials"]),
+    credentials,
     "inventory_app",
     "abcdef123",
     cookie_expiry_days=7
