@@ -25,7 +25,7 @@ authenticator = stauth.Authenticate(
     cookie_expiry_days=7
 )
 
-authenticator.login()
+authenticator.login(fields={"Form name": "🔐 Login to the Clothing Management System"})
 
 if st.session_state.get("authentication_status") is False:
     st.error("❌ Incorrect username or password")
