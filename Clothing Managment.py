@@ -328,8 +328,8 @@ elif page == "📊 Dashboard":
 
     df = pd.DataFrame(items)
 
-    sold = df[df["date_sold"].notna()]
-    unsold = df[df["date_sold"].isna()]
+    sold = df[df["sell_price"].notna()]
+    unsold = df[df["sell_price"].isna()]
 
     #  KPI row 
     k1, k2, k3, k4 = st.columns(4)
