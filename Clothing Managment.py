@@ -144,11 +144,14 @@ def generate_barcode_number():
     next_num = max(numbers) + 1 if numbers else 1
     return f"FLY{next_num:04d}"
 
-def make_barcode_image(barcode_number: str) -> BytesIO:
-    """Render a Code128 barcode to a PNG in memory."""
+def make_barcode_image(barcode_number: str, name: str = "", price: str = "") -> BytesIO:
+    """Render a Code128 barcode to a PNG in memory including label text."""
     code128 = barcode.get_barcode_class("code128")
     buf = BytesIO()
-    code128(barcode_number, writer=ImageWriter()).write(buf)
+
+    full_text = f"{barcode_number} | {name} | ${price}"
+
+    code128(full_text, writer=ImageWriter()).write(buf)
     buf.seek(0)
     return buf
 
