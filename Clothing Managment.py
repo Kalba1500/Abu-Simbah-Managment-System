@@ -173,11 +173,19 @@ def add_item(barcode_number, name, date_bought, buy_price):
 
 def update_sale(barcode_number, date_sold, sell_price, buy_price):
     profit = round(float(sell_price) - float(buy_price), 2)
-    supabase.table("inventory").update({
-        "date_sold": str(date_sold),
+
+    update_data = {
         "sell_price": float(sell_price),
         "profit": profit,
-    }).eq("barcode_number", barcode_number).execute()
+    }
+
+    # only add date_sold if provided
+    if date_sold:
+        update_data["date_sold"] = str(date_sold)
+
+    supabase.table("inventory").update(update_data).eq(
+        "barcode_number", barcode_number
+    ).execute()
 
 def get_all_items():
     res = supabase.table("inventory").select("*").order("id", desc=True).execute()
