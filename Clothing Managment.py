@@ -294,7 +294,7 @@ elif page == "💰 Record Sale":
             st.markdown('<div class="card">', unsafe_allow_html=True)
             st.markdown(f"**Item:** {item['name']}  |  **Barcode:** `{item['barcode_number']}`  |  **Bought for:** ${item['buy_price']:.2f}")
             with st.form("sale_form"):
-                date_sold = st.date_input("Date sold *", value=date.today())
+                date_sold = st.date_input("Date sold (optional)", value=None)
                 sell_price = st.number_input("Sell price ($) *", min_value=0.0, step=0.01, format="%.2f")
                 submitted = st.form_submit_button("✅ Record Sale")
 
