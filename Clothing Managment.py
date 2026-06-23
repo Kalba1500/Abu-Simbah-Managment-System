@@ -211,7 +211,7 @@ def make_barcode_image(barcode_number: str, name: str, price: str, size: str, co
     output = BytesIO()
     img.save(output, format="PNG")
     output.seek(0)
-    return outputoutput
+    return output
 
 def lookup_item(barcode_number: str):
     res = supabase.table("inventory").select("*").eq("barcode_number", barcode_number).execute()
