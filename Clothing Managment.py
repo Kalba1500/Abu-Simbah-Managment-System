@@ -144,7 +144,7 @@ def generate_barcode_number():
     next_num = max(numbers) + 1 if numbers else 1
     return f"FLY{next_num:04d}"
 
-def make_barcode_image(barcode_number: str, name: str = "", price: str = "") -> BytesIO:
+def make_barcode_image(barcode_number: str, name: str = "", price: str = "", size: str = "", condition: str ="") -> BytesIO:
     """Render a Code128 barcode to a PNG in memory including label text."""
     code128 = barcode.get_barcode_class("code128")
     buf = BytesIO()
@@ -272,7 +272,7 @@ if page == "🔍 Check / Add Item":
                 if not name:
                     st.error("Item name is required.")
                 else:
-                    add_item(barcode_input, name, date_bought, buy_price)
+                    add_item(barcode_input, name, size, condition, date_bought, buy_price)
                     st.success(f"✅ **{name}** added to inventory!")
 
                     # Show printable barcode
