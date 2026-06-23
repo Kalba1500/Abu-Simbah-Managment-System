@@ -258,7 +258,12 @@ if page == "🔍 Check / Add Item":
             st.markdown(f'<span class="tag">➕ NEW ITEM — NOT IN DATABASE</span>', unsafe_allow_html=True)
             st.markdown('<div class="card">', unsafe_allow_html=True)
             with st.form("add_item_form"):
-                name = st.text_input("Item name *", placeholder="e.g. Vintage Camera")
+                name = st.text_input("Item name *", placeholder="e.g. Multi Cross CH Hoodie")
+                size = st.text_input("Size *", placeholder="e.g. 32, M, L")
+                condition = st.selectbox(
+                    "Condition *",
+                    ["New", "Like New", "Excellent", "Good", "Fair", "Pre-Owned"]
+                )
                 date_bought = st.date_input("Date bought *", value=date.today())
                 buy_price = st.number_input("Buy price ($) *", min_value=0.0, step=0.01, format="%.2f")
                 submitted = st.form_submit_button("💾 Save & Generate Barcode")
