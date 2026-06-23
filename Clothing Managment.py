@@ -276,7 +276,13 @@ if page == "🔍 Check / Add Item":
                     st.success(f"✅ **{name}** added to inventory!")
 
                     # Show printable barcode
-                    buf = make_barcode_image(barcode_input, name, str(buy_price))
+                    buf = make_barcode_image(
+                        barcode_input,
+                        name,
+                        str(buy_price),
+                        size,
+                        condition
+                    )
                     st.markdown("### 🖨️ Printable Barcode")
                     st.image(buf, caption=f"Barcode: {barcode_input}", use_container_width=False)
                     st.download_button(
