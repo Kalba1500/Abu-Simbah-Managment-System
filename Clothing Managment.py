@@ -172,7 +172,7 @@ def make_barcode_image(barcode_number: str, name: str, price: str, size: str, co
             break
         bbox = draw.textbbox((0, 0), name, font=font_big)
         w_name = bbox[2] - bbox[0]
-        if w_name >= max_width or font_size > 60:
+        if w_name >= max_width or font_size > 70:  # stop if wide enough or too big
             break
         font_size += 2
 
@@ -184,7 +184,7 @@ def make_barcode_image(barcode_number: str, name: str, price: str, size: str, co
 
     y = 10
 
-    # 1. Item name (centered)
+    # 1. Item name (centered, scaled)
     bbox = draw.textbbox((0, 0), name, font=font_big)
     w_name, h_name = bbox[2] - bbox[0], bbox[3] - bbox[1]
     draw.text(((width - w_name) / 2, y), name, fill="black", font=font_big)
@@ -211,7 +211,7 @@ def make_barcode_image(barcode_number: str, name: str, price: str, size: str, co
     output = BytesIO()
     img.save(output, format="PNG")
     output.seek(0)
-    return output
+    return outputoutput
 
 def lookup_item(barcode_number: str):
     res = supabase.table("inventory").select("*").eq("barcode_number", barcode_number).execute()
