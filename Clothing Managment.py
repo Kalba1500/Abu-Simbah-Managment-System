@@ -149,7 +149,7 @@ def make_barcode_image(barcode_number: str, name: str = "", price: str = "", siz
     code128 = barcode.get_barcode_class("code128")
     buf = BytesIO()
 
-    full_text = f"{barcode_number} | {name} | ${price}"
+    full_text = f"{name}\n${price} / {size} / {condition}\n{barcode_number}"
 
     code128(full_text, writer=ImageWriter()).write(buf)
     buf.seek(0)
