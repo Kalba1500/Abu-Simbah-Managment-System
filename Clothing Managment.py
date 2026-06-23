@@ -172,21 +172,34 @@ def make_barcode_image(barcode_number: str, name: str, price: str, size: str, co
 
     y = 10
 
-    # 1. Name (TOP)
-    draw.text((10, y), name, fill="black", font=font_big)
-    y += 30
+    # Use larger fonts
+    try:
+        font_big = ImageFont.truetype("arial.ttf", 28)   # bigger for name
+        font_small = ImageFont.truetype("arial.ttf", 22) # bigger for details
+    except:
+        font_big = ImageFont.load_default()
+        font_small = ImageFont.load_default()
 
-    # 2. Details
-    draw.text((10, y), f"${price} / {size} / {condition}", fill="black", font=font_small)
-    y += 30
+    # 1. Item name (centered)
+    w_name, h_name = draw.textsize(name, font=font_big)
+    draw.text(((width - w_name) / 2, y), name, fill="black", font=font_big)
+    y += h_name + 20
 
-    # 3. Barcode (centered)
+    # 2. Price / Size / Condition (centered)
+    details = f"${price} / {size} / {condition}"
+    w_details, h_details = draw.textsize(details, font=font_small)
+    draw.text(((width - w_details) / 2, y), details, fill="black", font=font_small)
+    y += h_details + 30
+
+    # 3. Barcode image (centered)
     barcode_img = barcode_img.resize((450, 120))
-    img.paste(barcode_img, (25, y))
-    y += 130
+    x_barcode = (width - barcode_img.width) // 2
+    img.paste(barcode_img, (x_barcode, y))
+    y += barcode_img.height + 10
 
-    # 4. Barcode number
-    draw.text((10, y), barcode_number, fill="black", font=font_small)
+    # 4. Barcode number (centered)
+    w_code, h_code = draw.textsize(barcode_number, font=font_small)
+    draw.text(((width - w_code) / 2, y), barcode_number, fill="black", font=font_small)
 
     output = BytesIO()
     img.save(output, format="PNG")
