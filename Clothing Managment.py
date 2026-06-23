@@ -287,7 +287,7 @@ if page == "🔍 Check / Add Item":
                     st.image(buf, caption=f"Barcode: {barcode_input}", use_container_width=False)
                     st.download_button(
                         "⬇️ Download Barcode PNG",
-                    data = make_barcode_image(
+                    data=make_barcode_image(
                         barcode_input,
                         name,
                         str(buy_price),
