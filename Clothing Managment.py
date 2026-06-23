@@ -173,12 +173,19 @@ def make_barcode_image(barcode_number: str, name: str, price: str, size: str, co
     y = 10
 
     # Use larger fonts
-    try:
-        font_big = ImageFont.truetype("arial.ttf", 28)   # bigger for name
-        font_small = ImageFont.truetype("arial.ttf", 22) # bigger for details
+    max_width = 450  # target width (same as barcode image)
+    font_size = 28
+    while True:
+        try:
+            font_big = ImageFont.truetype("arial.ttf", font_size)
     except:
         font_big = ImageFont.load_default()
-        font_small = ImageFont.load_default()
+        break
+    bbox = draw.textbbox((0, 0), name, font=font_big)
+    w_name = bbox[2] - bbox[0]
+    if w_name >= max_width or font_size > 60:  # stop if wide enough or too big
+        break
+    font_size += 2
 
     # 1. Item name (centered)
     bbox = draw.textbbox((0, 0), name, font=font_big)
