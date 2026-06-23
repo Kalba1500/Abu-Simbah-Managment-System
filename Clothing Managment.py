@@ -144,16 +144,54 @@ def generate_barcode_number():
     next_num = max(numbers) + 1 if numbers else 1
     return f"FLY{next_num:04d}"
 
-def make_barcode_image(barcode_number: str, name: str = "", price: str = "", size: str = "", condition: str ="") -> BytesIO:
-    """Render a Code128 barcode to a PNG in memory including label text."""
+def make_barcode_image(barcode_number: str, name: str, price: str, size: str, condition: str) -> BytesIO:
+    from PIL import Image, ImageDraw, ImageFont
+    import barcode
+    from barcode.writer import ImageWriter
+
+    # --- Generate barcode image only ---
     code128 = barcode.get_barcode_class("code128")
-    buf = BytesIO()
+    barcode_buf = BytesIO()
+    code128(barcode_number, writer=ImageWriter()).write(barcode_buf)
+    barcode_buf.seek(0)
 
-    full_text = f"{name}\n${price} / {size} / {condition}\n{barcode_number}"
+    barcode_img = Image.open(barcode_buf)
 
-    code128(full_text, writer=ImageWriter()).write(buf)
-    buf.seek(0)
-    return buf
+    # --- Create label canvas ---
+    width = 500
+    height = 300
+    img = Image.new("RGB", (width, height), "white")
+    draw = ImageDraw.Draw(img)
+
+    try:
+        font_big = ImageFont.truetype("arial.ttf", 18)
+        font_small = ImageFont.truetype("arial.ttf", 14)
+    except:
+        font_big = ImageFont.load_default()
+        font_small = ImageFont.load_default()
+
+    y = 10
+
+    # 1. Name (TOP)
+    draw.text((10, y), name, fill="black", font=font_big)
+    y += 30
+
+    # 2. Details
+    draw.text((10, y), f"${price} / {size} / {condition}", fill="black", font=font_small)
+    y += 30
+
+    # 3. Barcode (centered)
+    barcode_img = barcode_img.resize((450, 120))
+    img.paste(barcode_img, (25, y))
+    y += 130
+
+    # 4. Barcode number
+    draw.text((10, y), barcode_number, fill="black", font=font_small)
+
+    output = BytesIO()
+    img.save(output, format="PNG")
+    output.seek(0)
+    return output
 
 def lookup_item(barcode_number: str):
     res = supabase.table("inventory").select("*").eq("barcode_number", barcode_number).execute()
