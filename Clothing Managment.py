@@ -456,10 +456,22 @@ elif page == "📊 Dashboard":
     if search_barcode:
         view_df = view_df[view_df["barcode_number"].str.contains(search_barcode, case=False, na=False)]
 
-    display_cols = ["barcode_number", "name", "date_bought", "buy_price", "date_sold", "sell_price", "profit"]
+    display_cols = [
+    "barcode_number",
+    "name",
+    "size",
+    "condition",
+    "date_bought",
+    "buy_price",
+    "date_sold",
+    "sell_price",
+    "profit"
+    ]
     rename_map = {
         "barcode_number": "Barcode",
         "name": "Item",
+        "size": "Size",
+        "condition": "Condition",
         "date_bought": "Bought On",
         "buy_price": "Buy ($)",
         "date_sold": "Sold On",
