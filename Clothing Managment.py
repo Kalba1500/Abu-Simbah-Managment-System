@@ -321,17 +321,21 @@ if page == "🔍 Check / Add Item":
                         size,
                         condition
                     )
+                    
                     st.markdown("### 🖨️ Printable Barcode")
-                    st.image(buf, caption=f"Barcode: {barcode_input}", use_container_width=False)
+                    st.image(buf, use_container_width=False)
+
+                    # Show the text label exactly as required
+                    st.markdown(f"""
+            {name}
+            ${buy_price:.2f} / {size} / {condition}
+
+            `{barcode_input}`
+                    """)
+                    
                     st.download_button(
                         "⬇️ Download Barcode PNG",
-                    data=make_barcode_image(
-                        barcode_input,
-                        name,
-                        str(buy_price),
-                        size,
-                        condition
-                    ),
+                        data=buf,
                         file_name=f"barcode_{barcode_input}.png",
                         mime="image/png",
                     )
