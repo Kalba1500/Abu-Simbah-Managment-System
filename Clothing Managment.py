@@ -164,6 +164,8 @@ def add_item(barcode_number, name, size, condition, date_bought, buy_price):
     supabase.table("inventory").insert({
         "barcode_number": barcode_number,
         "name": name,
+        "size": size,
+        "condition": condition,
         "date_bought": str(date_bought),
         "date_sold": None,
         "buy_price": float(buy_price),
