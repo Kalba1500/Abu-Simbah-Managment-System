@@ -154,38 +154,35 @@ def make_barcode_image(barcode_number: str, name: str, price: str, size: str, co
     barcode_buf = BytesIO()
     code128(barcode_number, writer=ImageWriter()).write(barcode_buf)
     barcode_buf.seek(0)
-
     barcode_img = Image.open(barcode_buf)
 
     # --- Create label canvas ---
-    width = 500
-    height = 300
+    width, height = 500, 300
     img = Image.new("RGB", (width, height), "white")
     draw = ImageDraw.Draw(img)
 
-    try:
-        font_big = ImageFont.truetype("arial.ttf", 18)
-        font_small = ImageFont.truetype("arial.ttf", 14)
-    except:
-        font_big = ImageFont.load_default()
-        font_small = ImageFont.load_default()
-
-    y = 10
-
-    # Use larger fonts
+    # Dynamically enlarge name font until it nearly matches barcode width
     max_width = 450  # target width (same as barcode image)
     font_size = 28
     while True:
         try:
             font_big = ImageFont.truetype("arial.ttf", font_size)
+        except:
+            font_big = ImageFont.load_default()
+            break
+        bbox = draw.textbbox((0, 0), name, font=font_big)
+        w_name = bbox[2] - bbox[0]
+        if w_name >= max_width or font_size > 60:
+            break
+        font_size += 2
+
+    # Details font
+    try:
+        font_small = ImageFont.truetype("arial.ttf", 22)
     except:
-        font_big = ImageFont.load_default()
-        break
-    bbox = draw.textbbox((0, 0), name, font=font_big)
-    w_name = bbox[2] - bbox[0]
-    if w_name >= max_width or font_size > 60:  # stop if wide enough or too big
-        break
-    font_size += 2
+        font_small = ImageFont.load_default()
+
+    y = 10
 
     # 1. Item name (centered)
     bbox = draw.textbbox((0, 0), name, font=font_big)
