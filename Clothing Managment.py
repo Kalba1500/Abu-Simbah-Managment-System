@@ -293,7 +293,7 @@ if page == "🔍 Check / Add Item":
                         str(buy_price),
                         size,
                         condition
-                    )
+                    ),
                         file_name=f"barcode_{barcode_input}.png",
                         mime="image/png",
                     )
