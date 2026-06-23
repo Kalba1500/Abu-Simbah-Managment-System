@@ -181,13 +181,15 @@ def make_barcode_image(barcode_number: str, name: str, price: str, size: str, co
         font_small = ImageFont.load_default()
 
     # 1. Item name (centered)
-    w_name, h_name = draw.textsize(name, font=font_big)
+    bbox = draw.textbbox((0, 0), name, font=font_big)
+    w_name, h_name = bbox[2] - bbox[0], bbox[3] - bbox[1]
     draw.text(((width - w_name) / 2, y), name, fill="black", font=font_big)
     y += h_name + 20
 
     # 2. Price / Size / Condition (centered)
     details = f"${price} / {size} / {condition}"
-    w_details, h_details = draw.textsize(details, font=font_small)
+    bbox = draw.textbbox((0, 0), details, font=font_small)
+    w_details, h_details = bbox[2] - bbox[0], bbox[3] - bbox[1]
     draw.text(((width - w_details) / 2, y), details, fill="black", font=font_small)
     y += h_details + 30
 
@@ -198,7 +200,8 @@ def make_barcode_image(barcode_number: str, name: str, price: str, size: str, co
     y += barcode_img.height + 10
 
     # 4. Barcode number (centered)
-    w_code, h_code = draw.textsize(barcode_number, font=font_small)
+    bbox = draw.textbbox((0, 0), barcode_number, font=font_small)
+    w_code, h_code = bbox[2] - bbox[0], bbox[3] - bbox[1]
     draw.text(((width - w_code) / 2, y), barcode_number, fill="black", font=font_small)
 
     output = BytesIO()
