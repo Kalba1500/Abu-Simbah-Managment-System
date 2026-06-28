@@ -135,14 +135,14 @@ except Exception:
 
 #  Helpers 
 def generate_barcode_number():
-    """Generate next barcode in FLY0001, FLY0002... sequence."""
+    """Generate next barcode in DOA0001, DOA0002... sequence."""
     res = supabase.table("inventory").select("barcode_number").execute()
-    existing = [r["barcode_number"] for r in res.data if r["barcode_number"].startswith("FLY")]
+    existing = [r["barcode_number"] for r in res.data if r["barcode_number"].startswith("DOA")]
     if not existing:
-        return "FLY0001"
+        return "DOA0001"
     numbers = [int(b[3:]) for b in existing if b[3:].isdigit()]
     next_num = max(numbers) + 1 if numbers else 1
-    return f"FLY{next_num:04d}"
+    return f"DOA{next_num:04d}"
 
 def make_barcode_image(barcode_number: str, name: str, price: str, size: str, condition: str) -> BytesIO:
     from PIL import Image, ImageDraw, ImageFont
