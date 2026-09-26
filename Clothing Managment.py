@@ -298,6 +298,8 @@ if page == "🔍 Check / Add Item":
             # Full item name on its own line so it never gets truncated
             st.markdown(f"### {existing['name']}")
             st.markdown(f"`Barcode: {existing['barcode_number']}`")
+            if existing.get("department") or existing.get("department_sub"):
+                st.markdown(f"**Department:** {existing.get('department') or '—'} / {existing.get('department_sub') or '—'}")
             st.markdown("---")
 
             c1, c2, c3 = st.columns(3)
