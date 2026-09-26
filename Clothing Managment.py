@@ -355,7 +355,7 @@ if page == "🔍 Check / Add Item":
                 if not name:
                     st.error("Item name is required.")
                 else:
-                    add_item(barcode_input, name, size, condition, date_bought, buy_price, note)
+                    add_item(barcode_input, name, size, condition, date_bought, buy_price, note, department, department_sub)
                     st.success(f"✅ **{name}** added to inventory!")
 
                     # Show printable barcode
