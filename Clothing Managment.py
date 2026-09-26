@@ -5,8 +5,8 @@ from barcode.writer import ImageWriter
 from io import BytesIO
 from datetime import date
 import pandas as pd
+import math
 import streamlit_authenticator as stauth
-import math  # put this up top with your other imports
 
 credentials = {
     "usernames": {
@@ -218,8 +218,7 @@ def lookup_item(barcode_number: str):
     res = supabase.table("inventory").select("*").eq("barcode_number", barcode_number).execute()
     return res.data[0] if res.data else None
 
-def add_item(barcode_number, name, size, condition, date_bought, buy_price):
-    profit = None  # not sold yet
+def add_item(barcode_number, name, size, condition, date_bought, buy_price, note=None):
     supabase.table("inventory").insert({
         "barcode_number": barcode_number,
         "name": name,
@@ -230,6 +229,7 @@ def add_item(barcode_number, name, size, condition, date_bought, buy_price):
         "buy_price": float(buy_price),
         "sell_price": None,
         "profit": None,
+        "note": note,
     }).execute()
 
 def update_sale(barcode_number, date_sold, sell_price, buy_price):
@@ -310,6 +310,11 @@ if page == "🔍 Check / Add Item":
                 "Profit",
                 f"${existing['profit']:.2f}" if existing["profit"] is not None else "Pending",
             )
+
+            if existing.get("note"):
+                st.markdown("---")
+                st.markdown(f"**📝 Note:** {existing['note']}")
+
             st.markdown("</div>", unsafe_allow_html=True)
 
         else:
@@ -325,13 +330,18 @@ if page == "🔍 Check / Add Item":
                 )
                 date_bought = st.date_input("Date bought *", value=date.today())
                 buy_price = st.number_input("Buy price ($) *", min_value=0.0, step=0.01, format="%.2f")
+                note = st.text_area(
+                    "Note",
+                    max_chars=110,
+                    placeholder="Quick note about this item (110 characters max)...",
+                )
                 submitted = st.form_submit_button("💾 Save & Generate Barcode")
 
             if submitted:
                 if not name:
                     st.error("Item name is required.")
                 else:
-                    add_item(barcode_input, name, size, condition, date_bought, buy_price)
+                    add_item(barcode_input, name, size, condition, date_bought, buy_price, note)
                     st.success(f"✅ **{name}** added to inventory!")
 
                     # Show printable barcode
@@ -421,18 +431,19 @@ elif page == "📊 Dashboard":
     total_profit = sold["profit"].sum() if not sold.empty else 0
     k4.metric("Total Profit", f"${total_profit:,.2f}")
 
-unsold_cost = unsold["buy_price"].sum() if not unsold.empty else 0
+    #  Unsold cost + Sold:In Stock ratio 
+    unsold_cost = unsold["buy_price"].sum() if not unsold.empty else 0
 
-sold_n, instock_n = len(sold), len(unsold)
-if sold_n == 0 and instock_n == 0:
-    ratio_display = "—"
-else:
-    g = math.gcd(sold_n, instock_n) or 1
-    ratio_display = f"{sold_n // g}:{instock_n // g}"
+    sold_n, instock_n = len(sold), len(unsold)
+    if sold_n == 0 and instock_n == 0:
+        ratio_display = "—"
+    else:
+        g = math.gcd(sold_n, instock_n) or 1
+        ratio_display = f"{sold_n // g}:{instock_n // g}"
 
-k5, k6 = st.columns(2)
-k5.metric("Unsold Inventory Cost", f"${unsold_cost:,.2f}")
-k6.metric("Sold : In Stock", ratio_display)
+    k5, k6 = st.columns(2)
+    k5.metric("Unsold Inventory Cost", f"${unsold_cost:,.2f}")
+    k6.metric("Sold : In Stock", ratio_display)
 
     #  Profit/Loss by period 
     if not sold.empty:
@@ -479,7 +490,8 @@ k6.metric("Sold : In Stock", ratio_display)
     "buy_price",
     "date_sold",
     "sell_price",
-    "profit"
+    "profit",
+    "note",
     ]
     rename_map = {
         "barcode_number": "Barcode",
@@ -491,12 +503,16 @@ k6.metric("Sold : In Stock", ratio_display)
         "date_sold": "Sold On",
         "sell_price": "Sell ($)",
         "profit": "Profit ($)",
+        "note": "Note",
     }
     edited_df = st.data_editor(
         view_df[display_cols].rename(columns=rename_map),
         use_container_width=True,
         hide_index=True,
         disabled=["Barcode"],
+        column_config={
+            "Note": st.column_config.TextColumn(max_chars=110),
+        },
     )
 
     if st.button("💾 Save Changes"):
@@ -517,6 +533,7 @@ k6.metric("Sold : In Stock", ratio_display)
                 "buy_price": float(row["Buy ($)"]) if pd.notna(row["Buy ($)"]) else 0.0,
                 "sell_price": float(sell) if pd.notna(sell) and sell else None,
                 "profit": profit,
+                "note": row["Note"] if pd.notna(row["Note"]) else None,
             }).eq("barcode_number", row["Barcode"]).execute()
         st.success("✅ Changes saved!")
         st.rerun()
