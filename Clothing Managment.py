@@ -500,6 +500,7 @@ elif page == "📊 Dashboard":
     display_cols = [
     "barcode_number",
     "name",
+    "department_sub",
     "size",
     "condition",
     "date_bought",
@@ -512,6 +513,7 @@ elif page == "📊 Dashboard":
     rename_map = {
         "barcode_number": "Barcode",
         "name": "Item",
+        "department_sub": "Sub-Department",
         "size": "Size",
         "condition": "Condition",
         "date_bought": "Bought On",
