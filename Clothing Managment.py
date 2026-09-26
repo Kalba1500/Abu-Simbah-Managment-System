@@ -323,6 +323,18 @@ if page == "🔍 Check / Add Item":
             #  New item form 
             st.markdown(f'<span class="tag">➕ NEW ITEM — NOT IN DATABASE</span>', unsafe_allow_html=True)
             st.markdown('<div class="card">', unsafe_allow_html=True)
+
+            DEPARTMENTS = {
+                "Head": ["Hats/Beanies", "Eye Wear"],
+                "Upper Body": ["Inside", "T-Shirts", "Long Sleeve", "Crew Neck", "Hoodie", "Zip-Ups"],
+                "Middle Body": ["Belts", "Underwear"],
+                "Lower Body": ["Shorts", "Jean Shorts", "Sweat Pants", "Jeans", "Leggings", "Socks"],
+                "Other": ["Jewellery", "Hang Bags", "Bags", "Accessories"],
+            }
+            d1, d2 = st.columns(2)
+            department = d1.selectbox("Department *", list(DEPARTMENTS.keys()), key="new_item_department")
+            department_sub = d2.selectbox("Sub-Department *", DEPARTMENTS[department], key="new_item_sub")
+
             with st.form("add_item_form"):
                 name = st.text_input("Item name *", placeholder="e.g. Multi Cross CH Hoodie")
                 size = st.text_input("Size *", placeholder="e.g. 32, M, L")
