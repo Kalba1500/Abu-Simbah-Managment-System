@@ -218,7 +218,7 @@ def lookup_item(barcode_number: str):
     res = supabase.table("inventory").select("*").eq("barcode_number", barcode_number).execute()
     return res.data[0] if res.data else None
 
-def add_item(barcode_number, name, size, condition, date_bought, buy_price, note=None):
+def add_item(barcode_number, name, size, condition, date_bought, buy_price, note=None, department=None, department_sub=None):
     supabase.table("inventory").insert({
         "barcode_number": barcode_number,
         "name": name,
@@ -230,6 +230,8 @@ def add_item(barcode_number, name, size, condition, date_bought, buy_price, note
         "sell_price": None,
         "profit": None,
         "note": note,
+        "department": department,
+        "department_sub": department_sub,
     }).execute()
 
 def update_sale(barcode_number, date_sold, sell_price, buy_price):
