@@ -6,6 +6,7 @@ from io import BytesIO
 from datetime import date
 import pandas as pd
 import streamlit_authenticator as stauth
+import math  # put this up top with your other imports
 
 credentials = {
     "usernames": {
@@ -419,6 +420,19 @@ elif page == "📊 Dashboard":
     k3.metric("In Stock", len(unsold))
     total_profit = sold["profit"].sum() if not sold.empty else 0
     k4.metric("Total Profit", f"${total_profit:,.2f}")
+
+unsold_cost = unsold["buy_price"].sum() if not unsold.empty else 0
+
+sold_n, instock_n = len(sold), len(unsold)
+if sold_n == 0 and instock_n == 0:
+    ratio_display = "—"
+else:
+    g = math.gcd(sold_n, instock_n) or 1
+    ratio_display = f"{sold_n // g}:{instock_n // g}"
+
+k5, k6 = st.columns(2)
+k5.metric("Unsold Inventory Cost", f"${unsold_cost:,.2f}")
+k6.metric("Sold : In Stock", ratio_display)
 
     #  Profit/Loss by period 
     if not sold.empty:
