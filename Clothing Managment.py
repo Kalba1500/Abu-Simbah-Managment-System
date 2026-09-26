@@ -552,6 +552,7 @@ elif page == "📊 Dashboard":
                 "sell_price": float(sell) if pd.notna(sell) and sell else None,
                 "profit": profit,
                 "note": row["Note"] if pd.notna(row["Note"]) else None,
+                "department_sub": row["Sub-Department"] if pd.notna(row["Sub-Department"]) else None,
             }).eq("barcode_number", row["Barcode"]).execute()
         st.success("✅ Changes saved!")
         st.rerun()
